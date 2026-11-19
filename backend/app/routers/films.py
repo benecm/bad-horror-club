@@ -7,7 +7,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import selectinload
 
 from app.auth import CurrentUser, DbSession, get_current_user
-from app.models import Film, FilmStatus, Rating
+from app.models import Film, FilmStatus, Quote, Rating
 from app.schemas import FilmCreate, FilmDetail, FilmOut, FilmUpdate
 
 router = APIRouter(prefix="/films", tags=["films"], dependencies=[Depends(get_current_user)])
@@ -16,13 +16,16 @@ router = APIRouter(prefix="/films", tags=["films"], dependencies=[Depends(get_cu
 def _out(film: Film) -> FilmOut:
     out = FilmOut.model_validate(film)
     out.rating_count = len(film.ratings)
+    out.vote_user_ids = sorted(v.user_id for v in film.votes)
     return out
 
 
 def _detail(film: Film) -> FilmDetail:
     out = FilmDetail.model_validate(film)
     out.rating_count = len(film.ratings)
+    out.vote_user_ids = sorted(v.user_id for v in film.votes)
     out.ratings.sort(key=lambda r: r.created_at)
+    out.quotes.sort(key=lambda q: q.created_at)
     return out
 
 
@@ -30,7 +33,11 @@ def get_film_or_404(db: DbSession, film_id: int) -> Film:
     film = db.scalar(
         select(Film)
         .where(Film.id == film_id)
-        .options(selectinload(Film.ratings).selectinload(Rating.user))
+        .options(
+            selectinload(Film.ratings).selectinload(Rating.user),
+            selectinload(Film.quotes).selectinload(Quote.user),
+            selectinload(Film.votes),
+        )
     )
     if film is None:
         raise HTTPException(status.HTTP_404_NOT_FOUND, "Film not found")
@@ -41,7 +48,11 @@ def get_film_or_404(db: DbSession, film_id: int) -> Film:
 def list_films(
     db: DbSession, status_filter: Annotated[FilmStatus | None, Query(alias="status")] = None
 ) -> list[FilmOut]:
-    stmt = select(Film).options(selectinload(Film.ratings)).order_by(Film.created_at.desc())
+    stmt = (
+        select(Film)
+        .options(selectinload(Film.ratings), selectinload(Film.votes))
+        .order_by(Film.created_at.desc())
+    )
     if status_filter is not None:
         stmt = stmt.where(Film.status == status_filter)
     return [_out(f) for f in db.scalars(stmt)]

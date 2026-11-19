@@ -85,6 +85,18 @@ class FilmUpdate(BaseModel):
     watched_on: date | None = None
 
 
+class QuoteIn(BaseModel):
+    text: Annotated[str, StringConstraints(strip_whitespace=True, min_length=1, max_length=500)]
+
+
+class QuoteOut(ORMModel):
+    id: int
+    film_id: int
+    user: UserOut
+    text: str
+    created_at: datetime
+
+
 class FilmOut(ORMModel):
     id: int
     title: str
@@ -96,10 +108,21 @@ class FilmOut(ORMModel):
     added_by: int
     created_at: datetime
     rating_count: int = 0
+    # Ids of the members voting for this film as the next one to watch.
+    vote_user_ids: list[int] = []
 
 
 class FilmDetail(FilmOut):
     ratings: list[RatingOut]
+    quotes: list[QuoteOut]
+
+
+class TmdbResult(BaseModel):
+    tmdb_id: int
+    title: str
+    year: int | None
+    poster_url: str | None
+    overview: str | None
 
 
 # ---- rankings / stats / export ----

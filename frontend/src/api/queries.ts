@@ -65,6 +65,8 @@ export function useAddFilm() {
     mutationFn: (body: {
       title: string
       year?: number | null
+      poster_url?: string | null
+      tmdb_id?: number | null
       status: 'watchlist' | 'watched'
       watched_on?: string | null
     }) => unwrap(api.POST('/api/films', { body })),
@@ -116,6 +118,50 @@ export function useDeleteRating(filmId: number) {
       unwrap(
         api.DELETE('/api/films/{film_id}/rating', { params: { path: { film_id: filmId } } }),
       ),
+    onSuccess: invalidate,
+  })
+}
+
+export function useTmdbSearch(q: string) {
+  return useQuery({
+    queryKey: ['tmdb', q],
+    queryFn: () => unwrap(api.GET('/api/tmdb/search', { params: { query: { q } } })),
+    enabled: q.length >= 2,
+    staleTime: 5 * 60_000,
+    retry: false,
+  })
+}
+
+export function useVote() {
+  const invalidate = useInvalidateFilmData()
+  return useMutation({
+    mutationFn: ({ id, vote }: { id: number; vote: boolean }) =>
+      vote
+        ? unwrap(api.PUT('/api/films/{film_id}/vote', { params: { path: { film_id: id } } }))
+        : unwrap(api.DELETE('/api/films/{film_id}/vote', { params: { path: { film_id: id } } })),
+    onSuccess: invalidate,
+  })
+}
+
+export function useAddQuote(filmId: number) {
+  const invalidate = useInvalidateFilmData()
+  return useMutation({
+    mutationFn: (text: string) =>
+      unwrap(
+        api.POST('/api/films/{film_id}/quotes', {
+          params: { path: { film_id: filmId } },
+          body: { text },
+        }),
+      ),
+    onSuccess: invalidate,
+  })
+}
+
+export function useDeleteQuote() {
+  const invalidate = useInvalidateFilmData()
+  return useMutation({
+    mutationFn: (id: number) =>
+      unwrap(api.DELETE('/api/quotes/{quote_id}', { params: { path: { quote_id: id } } })),
     onSuccess: invalidate,
   })
 }

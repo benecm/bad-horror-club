@@ -19,6 +19,8 @@ services:
         sync: false
       - key: JOIN_CODE # the secret word friends need to register
         sync: false
+      - key: TMDB_API_KEY # film search and posters (free key from themoviedb.org)
+        sync: false
       - key: JWT_SECRET
         generateValue: true
       - key: CORS_ORIGINS

@@ -181,6 +181,75 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/films/{film_id}/quotes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Add Quote */
+        post: operations["add_quote_api_films__film_id__quotes_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/quotes/{quote_id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post?: never;
+        /** Delete Quote */
+        delete: operations["delete_quote_api_quotes__quote_id__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/films/{film_id}/vote": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Cast Vote */
+        put: operations["cast_vote_api_films__film_id__vote_put"];
+        post?: never;
+        /** Remove Vote */
+        delete: operations["remove_vote_api_films__film_id__vote_delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/tmdb/search": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Search */
+        get: operations["search_api_tmdb_search_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -316,8 +385,15 @@ export interface components {
              * @default 0
              */
             rating_count: number;
+            /**
+             * Vote User Ids
+             * @default []
+             */
+            vote_user_ids: number[];
             /** Ratings */
             ratings: components["schemas"]["RatingOut"][];
+            /** Quotes */
+            quotes: components["schemas"]["QuoteOut"][];
         };
         /** FilmHighlight */
         FilmHighlight: {
@@ -355,6 +431,11 @@ export interface components {
              * @default 0
              */
             rating_count: number;
+            /**
+             * Vote User Ids
+             * @default []
+             */
+            vote_user_ids: number[];
         };
         /**
          * FilmStatus
@@ -384,6 +465,26 @@ export interface components {
             username: string;
             /** Password */
             password: string;
+        };
+        /** QuoteIn */
+        QuoteIn: {
+            /** Text */
+            text: string;
+        };
+        /** QuoteOut */
+        QuoteOut: {
+            /** Id */
+            id: number;
+            /** Film Id */
+            film_id: number;
+            user: components["schemas"]["UserOut"];
+            /** Text */
+            text: string;
+            /**
+             * Created At
+             * Format: date-time
+             */
+            created_at: string;
         };
         /** RankedFilm */
         RankedFilm: {
@@ -484,6 +585,19 @@ export interface components {
             most_generous_critic: components["schemas"]["CriticStat"] | null;
             worst_film: components["schemas"]["FilmHighlight"] | null;
             most_fun_film: components["schemas"]["FilmHighlight"] | null;
+        };
+        /** TmdbResult */
+        TmdbResult: {
+            /** Tmdb Id */
+            tmdb_id: number;
+            /** Title */
+            title: string;
+            /** Year */
+            year: number | null;
+            /** Poster Url */
+            poster_url: string | null;
+            /** Overview */
+            overview: string | null;
         };
         /** TokenOut */
         TokenOut: {
@@ -924,6 +1038,159 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ExportOut"];
+                };
+            };
+        };
+    };
+    add_quote_api_films__film_id__quotes_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                film_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QuoteIn"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["QuoteOut"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_quote_api_quotes__quote_id__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                quote_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    cast_vote_api_films__film_id__vote_put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                film_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    remove_vote_api_films__film_id__vote_delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                film_id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    search_api_tmdb_search_get: {
+        parameters: {
+            query: {
+                q: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["TmdbResult"][];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };

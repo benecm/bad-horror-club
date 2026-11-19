@@ -4,7 +4,9 @@ import { Link, useNavigate, useParams } from 'react-router-dom'
 import { errorMessage } from '../api/client'
 import type { FilmDetail as FilmDetailData, RatingOut } from '../api/client'
 import {
+  useAddQuote,
   useDeleteFilm,
+  useDeleteQuote,
   useDeleteRating,
   useFilm,
   useMarkWatched,
@@ -114,7 +116,71 @@ function FilmView({ film }: { film: FilmDetailData }) {
           </ul>
         )}
       </section>
+
+      {watched && <Quotes film={film} />}
     </article>
+  )
+}
+
+function Quotes({ film }: { film: FilmDetailData }) {
+  const { user } = useAuth()
+  const add = useAddQuote(film.id)
+  const remove = useDeleteQuote()
+  const [text, setText] = useState('')
+
+  function onSubmit(e: FormEvent) {
+    e.preventDefault()
+    add.mutate(text, { onSuccess: () => setText('') })
+  }
+
+  return (
+    <section>
+      <h2 className="text-3xl">Best lines</h2>
+      {film.quotes.length === 0 ? (
+        <p className="mt-3 text-dust">No quotes yet. What did somebody say that you can’t forget?</p>
+      ) : (
+        <ul className="mt-4 grid grid-cols-[minmax(0,1fr)] gap-3">
+          {film.quotes.map((q) => (
+            <li key={q.id} className="rounded bg-shelf p-4">
+              <blockquote className="whitespace-pre-wrap text-lg">“{q.text}”</blockquote>
+              <div className="mt-2 flex items-center justify-between text-sm text-dust">
+                <span>Added by {q.user.display_name}</span>
+                {q.user.id === user?.id && (
+                  <button
+                    type="button"
+                    className="underline hover:text-bone"
+                    disabled={remove.isPending}
+                    onClick={() => remove.mutate(q.id)}
+                  >
+                    Delete
+                  </button>
+                )}
+              </div>
+            </li>
+          ))}
+        </ul>
+      )}
+      <form onSubmit={onSubmit} className="mt-4 grid gap-2">
+        <label className="grid gap-1">
+          <span className="text-sm text-dust">Add a quote</span>
+          <textarea
+            className="field min-h-16"
+            value={text}
+            onChange={(e) => setText(e.target.value)}
+            maxLength={500}
+            required
+          />
+        </label>
+        <ErrorText>
+          {add.isError ? errorMessage(add.error) : remove.isError ? errorMessage(remove.error) : null}
+        </ErrorText>
+        <div>
+          <button type="submit" className="btn" disabled={add.isPending || !text.trim()}>
+            {add.isPending ? 'Adding…' : 'Add quote'}
+          </button>
+        </div>
+      </form>
+    </section>
   )
 }
 
