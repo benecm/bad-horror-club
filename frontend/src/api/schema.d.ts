@@ -250,10 +250,50 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/bottom250": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bottom250 */
+        get: operations["bottom250_api_bottom250_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** Bottom250Entry */
+        Bottom250Entry: {
+            /** Position */
+            position: number;
+            /** Title */
+            title: string;
+            /** Year */
+            year: number | null;
+            /** Letterboxd Url */
+            letterboxd_url: string;
+            /** Film Id */
+            film_id: number | null;
+            status: components["schemas"]["FilmStatus"] | null;
+        };
+        /** Bottom250List */
+        Bottom250List: {
+            /** Source */
+            source: string;
+            /** Fetched On */
+            fetched_on: string;
+            /** Films */
+            films: components["schemas"]["Bottom250Entry"][];
+        };
         /** CriticStat */
         CriticStat: {
             /** User Id */
@@ -1191,6 +1231,26 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    bottom250_api_bottom250_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["Bottom250List"];
                 };
             };
         };

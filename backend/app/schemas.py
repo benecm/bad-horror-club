@@ -207,3 +207,19 @@ class ExportOut(BaseModel):
     users: list[ExportUser]
     films: list[ExportFilm]
     ratings: list[ExportRating]
+
+
+class Bottom250Entry(BaseModel):
+    position: int
+    title: str
+    year: int | None
+    letterboxd_url: str
+    # Set when the club already has this film (on the watchlist or watched).
+    film_id: int | None
+    status: FilmStatus | None
+
+
+class Bottom250List(BaseModel):
+    source: str
+    fetched_on: str
+    films: list[Bottom250Entry]

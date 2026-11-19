@@ -56,6 +56,7 @@ export function useInvalidateFilmData() {
       qc.invalidateQueries({ queryKey: ['film'] }),
       qc.invalidateQueries({ queryKey: ['rankings'] }),
       qc.invalidateQueries({ queryKey: keys.stats }),
+      qc.invalidateQueries({ queryKey: ['bottom250'] }),
     ])
 }
 
@@ -163,5 +164,13 @@ export function useDeleteQuote() {
     mutationFn: (id: number) =>
       unwrap(api.DELETE('/api/quotes/{quote_id}', { params: { path: { quote_id: id } } })),
     onSuccess: invalidate,
+  })
+}
+
+export function useBottom250() {
+  return useQuery({
+    queryKey: ['bottom250'],
+    queryFn: () => unwrap(api.GET('/api/bottom250')),
+    staleTime: 60_000,
   })
 }

@@ -21,6 +21,9 @@ export function Layout() {
           <NavLink to="/watchlist" className={linkClass}>
             Watchlist
           </NavLink>
+          <NavLink to="/bottom250" className={linkClass}>
+            Bottom 250
+          </NavLink>
           <NavLink to="/stats" className={linkClass}>
             Stats
           </NavLink>

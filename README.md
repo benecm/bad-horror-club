@@ -21,6 +21,13 @@ npm run dev                               # http://localhost:5173
 Backend checks: `uv run ruff check . && uv run pytest`. Frontend: `npm run build`.
 After changing the API, regenerate types with the backend running: `npm run gen:api`.
 
+## Bottom 250
+
+The Bottom 250 page lists Letterboxd's "bottom 250 horror films" and rolls a random number to pick one.
+The app reads a snapshot (`backend/app/data/bottom250.json`) and never calls Letterboxd while running.
+The list changes every week; to refresh the snapshot, run `uv run python scripts/update_bottom250.py`
+in `backend/` and commit the result.
+
 ## Hosting
 
 Neon (database) + Render free web service (backend) + Render static site (frontend), all defined in
