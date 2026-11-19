@@ -1,0 +1,46 @@
+services:
+  # FastAPI backend. Free instances sleep after 15 minutes without traffic.
+  - type: web
+    name: bad-horror-club-api
+    runtime: python
+    plan: free
+    region: frankfurt
+    branch: main
+    rootDir: backend
+    buildCommand: pip install uv && uv sync --frozen --no-dev
+    # Migrations run on every start, so no paid pre-deploy step is needed.
+    startCommand: uv run --no-dev alembic upgrade head && uv run --no-dev uvicorn app.main:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /api/health
+    autoDeployTrigger: commit
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: DATABASE_URL # Neon pooled connection string
+        sync: false
+      - key: JOIN_CODE # the secret word friends need to register
+        sync: false
+      - key: JWT_SECRET
+        generateValue: true
+      - key: CORS_ORIGINS
+        value: https://bad-horror-club-web.onrender.com
+
+  # React frontend. Static sites don't sleep.
+  - type: web
+    name: bad-horror-club-web
+    runtime: static
+    region: frankfurt
+    branch: main
+    rootDir: frontend
+    buildCommand: npm ci && npm run build
+    staticPublishPath: dist
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_VERSION
+        value: 22.23.1
+      - key: VITE_API_URL
+        value: https://bad-horror-club-api.onrender.com
+    routes:
+      # Lets React Router handle deep links and page refreshes.
+      - type: rewrite
+        source: /*
+        destination: /index.html

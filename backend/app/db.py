@@ -11,7 +11,13 @@ class Base(DeclarativeBase):
 
 
 # pool_pre_ping: Neon suspends idle computes, so connections can go stale.
-engine = create_engine(get_settings().database_url, pool_pre_ping=True)
+# prepare_threshold=None: no server-side prepared statements, which keeps psycopg safe
+# behind Neon's PgBouncer pooler.
+engine = create_engine(
+    get_settings().database_url,
+    pool_pre_ping=True,
+    connect_args={"prepare_threshold": None},
+)
 SessionLocal = sessionmaker(bind=engine, expire_on_commit=False)
 
 
