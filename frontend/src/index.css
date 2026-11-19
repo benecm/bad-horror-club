@@ -1,0 +1,148 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-tape: #140e11;
+  --color-shelf: #1f161a;
+  --color-shelf-hi: #2a1e23;
+  --color-blood: #d1202f;
+  --color-blood-dim: #8f1621;
+  --color-bone: #ece4d3;
+  --color-dust: #a99b97;
+  --color-sticker: #f2c230;
+  --font-display: 'Creepster', 'Impact', system-ui, sans-serif;
+  --font-sans: 'Instrument Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+}
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+  body {
+    background: var(--color-tape);
+    color: var(--color-bone);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    letter-spacing: 0.02em;
+    line-height: 1.05;
+  }
+  a {
+    color: inherit;
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-sticker);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    border-radius: 0.375rem;
+    padding: 0.55rem 1rem;
+    font-weight: 600;
+    background: var(--color-blood);
+    color: #fff;
+    cursor: pointer;
+    transition: background-color 0.15s;
+  }
+  .btn:hover:not(:disabled) {
+    background: #e32b3b;
+  }
+  .btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+  }
+  .btn-quiet {
+    background: transparent;
+    color: var(--color-bone);
+    box-shadow: inset 0 0 0 1px var(--color-shelf-hi);
+  }
+  .btn-quiet:hover:not(:disabled) {
+    background: var(--color-shelf-hi);
+  }
+  .field {
+    width: 100%;
+    border-radius: 0.375rem;
+    background: var(--color-shelf);
+    color: var(--color-bone);
+    padding: 0.6rem 0.75rem;
+    box-shadow: inset 0 0 0 1px var(--color-shelf-hi);
+  }
+  .field::placeholder {
+    color: var(--color-dust);
+  }
+  /* The one memorable thing: a rental-shop price sticker. */
+  .sticker {
+    display: inline-block;
+    background: var(--color-sticker);
+    color: #1a1204;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    padding: 0.2rem 0.55rem;
+    border-radius: 0.25rem;
+    transform: rotate(-3deg);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, 0.5);
+  }
+}
+
+/* Sliders: a dark track with a bone thumb ringed in red */
+input[type='range'] {
+  appearance: none;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: var(--color-shelf-hi);
+  width: 100%;
+}
+input[type='range']::-webkit-slider-thumb {
+  appearance: none;
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 50%;
+  background: var(--color-bone);
+  border: 3px solid var(--color-blood);
+  cursor: pointer;
+}
+input[type='range']::-moz-range-thumb {
+  width: 1.1rem;
+  height: 1.1rem;
+  border-radius: 50%;
+  background: var(--color-bone);
+  border: 3px solid var(--color-blood);
+  cursor: pointer;
+}
+
+@keyframes flicker {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  45% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+  55% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 0.6;
+  }
+}
+.flicker {
+  animation: flicker 3.2s infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .flicker {
+    animation: none;
+  }
+}
