@@ -100,3 +100,87 @@ class FilmOut(ORMModel):
 
 class FilmDetail(FilmOut):
     ratings: list[RatingOut]
+
+
+# ---- rankings / stats / export ----
+class ScoreChip(BaseModel):
+    user_id: int
+    display_name: str
+    badness: int
+    fun: int
+
+
+class RankedFilm(BaseModel):
+    rank: int
+    id: int
+    title: str
+    year: int | None
+    poster_url: str | None
+    watched_on: date | None
+    rating_count: int
+    avg_badness: float
+    avg_fun: float
+    avg_combined: float
+    scores: list[ScoreChip]
+
+
+class CriticStat(BaseModel):
+    user_id: int
+    display_name: str
+    rating_count: int
+    avg_badness: float
+    avg_fun: float
+
+
+class FilmHighlight(BaseModel):
+    id: int
+    title: str
+    score: float
+
+
+class StatsOut(BaseModel):
+    films_watched: int
+    films_on_watchlist: int
+    total_ratings: int
+    members: int
+    harshest_critic: CriticStat | None
+    most_generous_critic: CriticStat | None
+    worst_film: FilmHighlight | None
+    most_fun_film: FilmHighlight | None
+
+
+class ExportUser(ORMModel):
+    id: int
+    username: str
+    display_name: str
+    created_at: datetime
+
+
+class ExportFilm(ORMModel):
+    id: int
+    title: str
+    year: int | None
+    poster_url: str | None
+    tmdb_id: int | None
+    status: FilmStatus
+    watched_on: date | None
+    added_by: int
+    created_at: datetime
+
+
+class ExportRating(ORMModel):
+    id: int
+    film_id: int
+    user_id: int
+    badness: int
+    fun: int
+    comment: str | None
+    created_at: datetime
+    updated_at: datetime
+
+
+class ExportOut(BaseModel):
+    exported_at: datetime
+    users: list[ExportUser]
+    films: list[ExportFilm]
+    ratings: list[ExportRating]
