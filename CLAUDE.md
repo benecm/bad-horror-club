@@ -1,0 +1,11 @@
+# Project rules
+- Backend: FastAPI + SQLAlchemy 2.0 (typed `Mapped[]` style) + Alembic. Use uv, never pip directly.
+- Every schema change = a new Alembic migration. Never edit old migrations.
+- Every new endpoint gets a pytest test.
+- Frontend: React + TS strict mode, TanStack Query for all server data, no `any`.
+- Regenerate API types after backend changes: `npm run gen:api` in frontend/.
+- Secrets only via env vars; never commit .env files.
+- Run `uv run ruff check . && uv run pytest` (backend) and `npm run build` (frontend) before saying a task is done.
+- The repo is public: never commit real connection strings, join codes or JWT secrets.
+- Free tiers only (Neon, Render, GitHub). Local Postgres: `docker compose up -d` (db `horror`, test db `horror_test`).
+- Windows machine: `psql`/`pg_dump` are in `C:\Program Files\PostgreSQL\17\bin`.
