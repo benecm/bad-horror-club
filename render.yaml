@@ -28,7 +28,6 @@ services:
   - type: web
     name: bad-horror-club-web
     runtime: static
-    region: frankfurt
     branch: main
     rootDir: frontend
     buildCommand: npm ci && npm run build
