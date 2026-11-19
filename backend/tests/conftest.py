@@ -42,6 +42,35 @@ def db(engine) -> Iterator[Session]:
     connection.close()
 
 
+Headers = dict[str, str]
+
+
+def make_user(client: TestClient, username: str) -> Headers:
+    """Register + log in; returns Authorization headers."""
+    r = client.post(
+        "/api/auth/register",
+        json={
+            "username": username,
+            "display_name": username.title(),
+            "password": "correct-horse",
+            "join_code": get_settings().join_code,
+        },
+    )
+    assert r.status_code == 201, r.text
+    r = client.post("/api/auth/login", json={"username": username, "password": "correct-horse"})
+    return {"Authorization": f"Bearer {r.json()['access_token']}"}
+
+
+@pytest.fixture()
+def alice(client: TestClient) -> Headers:
+    return make_user(client, "alice")
+
+
+@pytest.fixture()
+def bob(client: TestClient) -> Headers:
+    return make_user(client, "bob")
+
+
 @pytest.fixture()
 def client(db: Session) -> Iterator[TestClient]:
     app.dependency_overrides[get_db] = lambda: db

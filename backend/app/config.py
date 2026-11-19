@@ -9,7 +9,7 @@ class Settings(BaseSettings):
 
     database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/horror"
     test_database_url: str = "postgresql+psycopg://postgres:postgres@localhost:5432/horror_test"
-    jwt_secret: str = "dev-secret-change-me"
+    jwt_secret: str = "dev-only-secret-do-not-use-in-production-0123456789"
     jwt_expire_minutes: int = 60 * 24 * 14
     join_code: str = "dev-join-code"
     cors_origins: str = "http://localhost:5173"
